@@ -8,7 +8,7 @@ public class ejercicio3 {
 
         Counter3 contador = new Counter3();
         ArrayList<MyTask3> array = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100000; i++) {
             MyTask3 e = new MyTask3(contador);
             e.start();
             array.add(e);

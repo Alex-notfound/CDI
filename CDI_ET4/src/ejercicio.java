@@ -1,6 +1,6 @@
 //En este ejercicio utilizamos el objeto Lock para descubrir una nueva forma de bloquear recursos
 //Es mas versatil, pero tras realizar pruebas, demora mas tiempo que si se utilizara un bloque synchronized
-//Esto lo he comprobado llevando el contador hasta 10000, tardando el bloque synchronized 9 segundos y usando lock 10
+//Esto lo he comprobado llevando el contador hasta 10000
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
