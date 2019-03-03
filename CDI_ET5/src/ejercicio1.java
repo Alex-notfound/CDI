@@ -1,3 +1,5 @@
+//En este ejercicio los hilos tendran un atributo color de manera que 2 hilos con el mismo color no podran
+//ejecutar consecutivamente el metodo EnterAndWait()
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +23,7 @@ public class ejercicio1 {
             thread.start();
             hilos.add(thread);
         }
+
         //Dormimos por un tiempo para que le de tiempo a los hilos a llegar al wait()
         //Es una manera cutre, proximamente se explicara una manera mas profesional
         Thread.sleep(100);
@@ -33,7 +36,7 @@ public class ejercicio1 {
             } catch (Exception e) {
             }
         }
-        
+
         //Esta parte solo se ejecutara si todos los hilos han podido ejecutar el metodo EnterAndWait()
         Iterator<Long> coleccion = a.getThreadIds().iterator();
         System.out.println("-- FINAL -- Contador: " + a.counter);
@@ -90,7 +93,6 @@ class ClassB implements Runnable {
     @Override
     public void run() {
         try {
-            //Añadimos synchronized para que solo un hilo pueda utilizar el objeto simultaneamente
             synchronized (a) {
                 a.wait();
                 while (!a.isFinished()) {
