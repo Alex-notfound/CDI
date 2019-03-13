@@ -83,9 +83,11 @@ class ClassB implements Runnable {
         try {
             //Añadimos synchronized para que solo un hilo pueda utilizar el objeto simultaneamente
             synchronized (a) {
+                //Bucle que se encarga de hacer esperar al hilo mientras no llegue su turno
                 while (a.turno != this.puesto) {
                     a.wait();
                 }
+                //Ejecuta el metodo una vez tiene acceso, si es posible
                 if (!a.isFinished()) {
                     System.out.println("Entra hilo con puesto " + this.puesto);
                     a.EnterAndWait();
