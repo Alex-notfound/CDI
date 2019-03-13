@@ -1,7 +1,4 @@
-/* Ejercicio en el que se utilizara wait() y notifyAll() para que los hilos esperen a que el objeto ClassC 
-sea liberado para utilizarlo y cuando acaben de utilizarlo notifiquen de que han terminado.
-Para llevar un orden de los hilos en la ejecucion del metodo hemos añadido un atributo "puesto" en ClassD y un atributo
-"turno" en ClassC, empleando un metodo de fuerza bruta como exige el enunciado. */
+/* En este ejercicio utilizamos notify() para avisar al siguiente hilo de la lista, que es el metodo mas eficiente */
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +14,7 @@ public class ejercicio2 {
         ArrayList<Thread> hilos = new ArrayList<Thread>();
 
         for (int i = 0; i < 5; i++) {
-            Thread thread = new Thread(new ClassD(a, i));
+            Thread thread = new Thread(new ClassD(a));
             thread.start();
             hilos.add(thread);
         }
@@ -25,7 +22,7 @@ public class ejercicio2 {
         //Es una manera cutre, proximamente se explicara una manera mas profesional
         Thread.sleep(100);
         synchronized (a) {
-            a.notifyAll();
+            a.notify();
         }
         for (int i = 0; i < hilos.size(); i++) {
             hilos.get(i).join();
@@ -42,12 +39,10 @@ class ClassC extends Thread {
 
     int counter;
     private Set<Long> threadIds;
-    int turno;
 
     public ClassC() {
         this.counter = 10;
         threadIds = new TreeSet<Long>();
-        turno = 0;
     }
 
     public Set<Long> getThreadIds() {
@@ -60,7 +55,6 @@ class ClassC extends Thread {
         System.out.println("Inicia hilo " + Thread.currentThread().getId());
         Thread.sleep(10);
         System.out.println("Acaba hilo " + Thread.currentThread().getId());
-        turno++;
     }
 
     boolean isFinished() {
@@ -71,11 +65,9 @@ class ClassC extends Thread {
 class ClassD implements Runnable {
 
     private ClassC a;
-    private int puesto;
 
-    public ClassD(ClassC a, int puesto) {
+    public ClassD(ClassC a) {
         this.a = a;
-        this.puesto = puesto;
     }
 
     @Override
@@ -83,14 +75,11 @@ class ClassD implements Runnable {
         try {
             //Añadimos synchronized para que solo un hilo pueda utilizar el objeto simultaneamente
             synchronized (a) {
-                while (a.turno != this.puesto) {
-                    a.wait();
-                }
+                a.wait();
                 if (!a.isFinished()) {
-                    System.out.println("Entra hilo con puesto " + this.puesto);
                     a.EnterAndWait();
                 }
-                a.notifyAll();
+                a.notify();
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(ClassD.class.getName()).log(Level.SEVERE, null, ex);
