@@ -1,6 +1,7 @@
-//Ejercicio tipico del Productor/Consumidor para ver como se produce una situacion deadlock
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ejercicio1 {
 
@@ -9,13 +10,17 @@ public class ejercicio1 {
         Productor[] prod = new Productor[10];
         Consumidor[] cons = new Consumidor[10];
         for (int i = 0; i < prod.length; i++) {
-            prod[i]=new Productor(buffer);
-            cons[i]=new Consumidor(buffer);
+            prod[i] = new Productor(buffer);
+            cons[i] = new Consumidor(buffer);
             prod[i].start();
             cons[i].start();
         }
+        Thread.sleep(1000);
+        for (int i = 0; i < prod.length; i++) {
+            prod[i].interrupt();
+            cons[i].interrupt();
+        }
     }
-
 }
 
 class Productor extends Thread {
@@ -29,17 +34,11 @@ class Productor extends Thread {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            synchronized (buffer) {
-                if (buffer.notFull) {
-                    buffer.write();
-                    buffer.notify();
-                } else {
-                    try {
-                        buffer.wait();
-                    } catch (InterruptedException ex) {
-                        break;
-                    }
-                }
+            try {
+                Thread.sleep((long) (Math.random() * 5));
+                buffer.write();
+            } catch (InterruptedException ex) {
+                break;
             }
         }
     }
@@ -55,17 +54,11 @@ class Consumidor extends Thread {
 
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            synchronized (buffer) {
-                if (buffer.notEmpty) {
-                    buffer.read();
-                    buffer.notify();
-                } else {
-                    try {
-                        buffer.wait();
-                    } catch (InterruptedException ex) {
-                        break;
-                    }
-                }
+            try {
+                Thread.sleep((long) (Math.random() * 5));
+                buffer.read();
+            } catch (InterruptedException ex) {
+                break;
             }
         }
     }
@@ -73,32 +66,46 @@ class Consumidor extends Thread {
 
 class Buffer {
 
+    private final ReentrantLock lock = new ReentrantLock();
+    final Condition notFull = lock.newCondition();
+    final Condition notEmpty = lock.newCondition();
+    boolean anteriorProductor;
     ArrayList lista;
     int capacidad;
-    public boolean notFull, notEmpty;
 
     public Buffer() {
         lista = new ArrayList<Integer>();
         capacidad = 1000;
-        notFull = true;
-        notEmpty = false;
+        anteriorProductor = false;
     }
 
-    void write() {
-        int e = (int) Math.floor(Math.random() * 9);
-        lista.add(e);
-        System.out.println("Añadido " + e);
-        
-        //Estas lineas son criticas para producir el deadlock
-        notEmpty = true;
-        notFull = lista.size() >= capacidad;
+    void write() throws InterruptedException {
+        lock.lock();
+        try {
+            while (lista.size() == capacidad || anteriorProductor) {
+                notFull.await();
+            }
+            int e = (int) Math.floor(Math.random() * 9);
+            lista.add(e);
+            anteriorProductor = true;
+            System.out.println("Añadido " + e);
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
+        }
     }
 
-    void read() {
-        System.out.println("Eliminado " + lista.remove(0));
-        
-        //Estas lineas son criticas para producir el deadlock
-        notFull = true;
-        notEmpty = !lista.isEmpty();
+    void read() throws InterruptedException {
+        lock.lock();
+        try {
+            while (lista.size() == 0) {
+                notEmpty.await();
+            }
+            anteriorProductor = false;
+            System.out.println("Eliminado " + lista.remove(0));
+            notFull.signal();
+        } finally {
+            lock.unlock();
+        }
     }
 }
