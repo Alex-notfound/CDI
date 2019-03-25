@@ -2,7 +2,7 @@
 
 import java.util.ArrayList;
 
-public class ejercicio1 {
+public class ejercicio2 {
 
     public static void main(String args[]) throws InterruptedException {
         Buffer buffer = new Buffer();
@@ -18,11 +18,11 @@ public class ejercicio1 {
 
 }
 
-class Productor extends Thread {
+class Productor2 extends Thread {
 
     Buffer buffer;
 
-    public Productor(Buffer buffer) {
+    public Productor2(Buffer buffer) {
         this.buffer = buffer;
     }
 
@@ -45,11 +45,11 @@ class Productor extends Thread {
     }
 }
 
-class Consumidor extends Thread {
+class Consumidor2 extends Thread {
 
     Buffer buffer;
 
-    public Consumidor(Buffer buffer) {
+    public Consumidor2(Buffer buffer) {
         this.buffer = buffer;
     }
 
@@ -71,13 +71,13 @@ class Consumidor extends Thread {
     }
 }
 
-class Buffer {
+class Buffer2 {
 
     ArrayList lista;
     int capacidad;
     public boolean notFull, notEmpty;
 
-    public Buffer() {
+    public Buffer2() {
         lista = new ArrayList<Integer>();
         capacidad = 1000;
         notFull = true;
