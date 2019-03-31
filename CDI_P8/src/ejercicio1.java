@@ -1,3 +1,4 @@
+// Creamos una clase semaforo que se encargara de gestionar el acceso de los hilos al recurso que solicitan
 
 import java.util.ArrayList;
 
@@ -108,6 +109,7 @@ class Buffer {
     }
 }
 
+//Clase semaforo
 class MySemaphore {
 
     int valor;
@@ -115,19 +117,23 @@ class MySemaphore {
     public MySemaphore(int initialValue) {
         valor = initialValue;
     }
-
+    
+    //Inicializa el semaforo con el valor 0
     public MySemaphore() {
         this(0);
     }
 
     public synchronized void down() throws InterruptedException {
+        //Si el valor es 0 o menor, hace esperar a los hilos hasta que se haya incrementado dicho valor
         if (valor <= 0) {
             this.wait();
         }
+        //Finalmente disminuye el valor
         valor--;
     }
 
     public synchronized void up() {
+        //Se incrementa el valor y se notifica a todos los hilos de que pueden acceder
         valor++;
         this.notifyAll();
     }
