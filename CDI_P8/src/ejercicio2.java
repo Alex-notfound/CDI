@@ -1,4 +1,4 @@
-
+//En este ejercicio utilizamos la clase semaforo de Java, muy similar al ejercicio anterior
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
