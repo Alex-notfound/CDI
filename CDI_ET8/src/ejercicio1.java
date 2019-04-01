@@ -1,3 +1,7 @@
+/* 
+En este ejercicio utilizamos la clase Executor de Java, de manera que ejecuta tantos hilos como numero de
+procesadores disponibles para calcular el factorial de varios numeros aleatorios
+*/
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -7,10 +11,10 @@ public class ejercicio1 {
     public static void main(String args[]) {
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         System.out.println(Runtime.getRuntime().availableProcessors());
-        miHilo[] hilos = new miHilo[40];
-        for (int i = 0; i < hilos.length; i++) {
-            hilos[i] = new miHilo((int) Math.floor(Math.random() * 10));
-            executor.execute(hilos[i]);
+        tarea[] tareas = new tarea[40];
+        for (int i = 0; i < tareas.length; i++) {
+            tareas[i] = new tarea((int) Math.floor(Math.random() * 10));
+            executor.execute(tareas[i]);
         }
         executor.shutdown();
         System.out.println("Ejecutor cerrado");
@@ -19,11 +23,11 @@ public class ejercicio1 {
     }
 }
 
-class miHilo implements Runnable {
+class tarea implements Runnable {
 
     int num;
 
-    public miHilo(int num) {
+    public tarea(int num) {
         this.num = num;
     }
 
